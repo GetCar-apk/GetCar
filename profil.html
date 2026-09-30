@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Profil — Get Car Driver</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;user-select:none;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#e8eaed}
+.pg{position:fixed;inset:0;z-index:5;background:#fff;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;gap:2px;padding:12px 8px;border-bottom:1px solid #f2f2f2;flex-shrink:0}
+.hd-bk,.hd-ico{width:44px;height:44px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hd-bk:active,.hd-ico:active{opacity:.6}
+.hd-tt{flex:1;text-align:center;font-size:20px;font-weight:800;color:#202124;padding-right:88px}
+.bd{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+.sinkron{margin:10px 18px 0;font-size:12px;color:#5f6368;display:flex;align-items:center;gap:7px}
+.sinkron .dot{width:8px;height:8px;border-radius:50%;background:#f7b500;flex-shrink:0;animation:denyut 1.2s infinite}
+.sinkron.ok .dot{background:#00b14f;animation:none}
+.sinkron.err .dot{background:#ea4335;animation:none}
+@keyframes denyut{0%,100%{opacity:1}50%{opacity:.35}}
+.pf-top{display:flex;align-items:center;gap:16px;padding:20px 18px 14px}
+.pf-foto{width:82px;height:82px;border-radius:50%;background:#eef1f3 center/cover no-repeat;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pf-tx{flex:1;min-width:0}
+.pf-nama{font-size:23px;font-weight:800;color:#202124;line-height:1.25;word-wrap:break-word}
+.pf-meta{font-size:15px;color:#5f6368;margin-top:6px;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden}
+.pf-meta .pisah{color:#dadce0;flex-shrink:0}
+.pf-meta span:not(.pisah){overflow:hidden;text-overflow:ellipsis}
+.reg-sec{margin:6px 16px 10px;background:#fff;border:1px solid #eee;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);padding:16px}
+.reg-sec h4{font-size:16px;font-weight:800;color:#202124;margin-bottom:2px}
+.reg-jml{font-size:12px;color:#9aa0a6;margin-bottom:8px}
+.reg-r{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #f4f4f4;font-size:14px}
+.reg-r:last-child{border-bottom:none}
+.reg-r .k{color:#5f6368;flex-shrink:0;max-width:45%}
+.reg-r .v{color:#202124;font-weight:600;text-align:right;word-break:break-word;flex:1}
+.reg-r .v.hijau{color:#00b14f}
+.pf-kartu{margin:6px 16px 10px;background:#fff;border:1px solid #eee;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);padding:18px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;width:calc(100% - 32px);font-family:inherit;text-align:left}
+.pf-kartu:active{background:#fafafa}
+.pf-kartu-tx{flex:1;min-width:0}
+.pf-kartu-tx b{display:block;font-size:19px;font-weight:800;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-kartu-tx small{display:block;font-size:15px;color:#5f6368;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-rate{padding:16px 18px 4px}
+.pf-rate-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pf-rate-judul{flex:1;min-width:0;font-size:18px;font-weight:800;color:#202124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-updated{font-size:13px;color:#5f6368;flex-shrink:0}
+.pf-rate-grid{display:flex;align-items:center;gap:16px;margin-top:12px}
+.pf-nilai{text-align:center;min-width:88px;flex-shrink:0}
+.pf-nilai b{font-size:36px;font-weight:800;color:#202124;line-height:1.1}
+.pf-nilai span{display:block;font-size:14px;color:#5f6368;margin-top:3px}
+.pf-bars{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0}
+.pf-bar-row{display:flex;align-items:center;gap:10px;font-size:14px;color:#5f6368}
+.pf-bar-row>span:first-child{width:10px;text-align:center}
+.pf-bar-track{flex:1;height:8px;border-radius:99px;background:#ececec;overflow:hidden}
+.pf-bar-fill{height:100%;border-radius:99px;background:#f7b500;transition:width .45s ease}
+.pf-bar-n{min-width:28px;text-align:right;font-size:14px;color:#5f6368}
+.pf-tabs{display:flex;margin-top:14px;border-bottom:2px solid #eee}
+.pf-tab{flex:1;background:none;border:none;padding:14px 0;font-size:18px;font-weight:700;color:#5f6368;cursor:pointer;position:relative;font-family:inherit}
+.pf-tab.aktif{color:#202124}
+.pf-tab.aktif::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:3.5px;background:#00b14f}
+.pf-sec{padding:16px 18px 6px}
+.pf-sec h4{font-size:18px;font-weight:700;color:#202124;margin-bottom:12px}
+.pf-lencana{display:flex;gap:18px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+.pf-lencana::-webkit-scrollbar{display:none}
+.pf-lc{width:86px;flex-shrink:0;text-align:center;cursor:pointer}
+.pf-lc-ic{position:relative;width:74px;height:74px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px}
+.pf-lc-n{position:absolute;top:-5px;right:-4px;background:#5f6368;color:#fff;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px}
+.pf-lc .l{display:block;font-size:14px;color:#202124;margin-top:8px;line-height:1.3}
+.pf-lihat{background:none;border:none;color:#1a73e8;font-size:16px;font-weight:700;padding:10px 0 4px;cursor:pointer;font-family:inherit}
+.pf-ulasan{padding:12px 18px 20px}
+.pf-ulasan h4{font-size:18px;font-weight:800;color:#202124;margin:8px 0 4px}
+.pf-u{border-top:1px solid #f0f0f0;padding:13px 0}
+.pf-u-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pf-u-top b{color:#202124;font-size:15px}
+.pf-u-star{color:#fbbc04;font-size:13px;letter-spacing:1px}
+.pf-u-teks{font-size:14px;color:#5f6368;margin-top:4px;line-height:1.45}
+.kosong{color:#9aa0a6;font-size:14.5px;padding:6px 0;line-height:1.6}
+.r{background:#fff;border:1px solid #f0f0f0;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px;color:#202124;text-align:left}
+.r .sub{font-size:12px;color:#5f6368}
+.r b{color:#00b14f}
+.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#fff;z-index:7;display:flex;border-top:1px solid #eee}
+.nav a{flex:1;color:#5f6368;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;white-space:nowrap;overflow:hidden;text-decoration:none}
+.nav a span{max-width:70px;overflow:hidden;text-overflow:ellipsis}
+.nav a.aktif{color:#00b14f;font-weight:700}
+.modal{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.2s}
+.modal.tampil{opacity:1;pointer-events:auto}
+.modal-card{background:#fff;border-radius:20px;padding:22px;width:85%;max-width:330px;text-align:center;transform:scale(.95);transition:.2s;max-height:80%;overflow:auto}
+.modal.tampil .modal-card{transform:scale(1)}
+.modal-card h3{color:#202124;margin-bottom:8px}
+.m-in{width:100%;margin-top:14px;padding:12px 14px;font-size:16px;font-weight:600;border:2px solid #dadce0;border-radius:12px;color:#202124;outline:none;font-family:inherit;text-align:left}
+.m-in:focus{border-color:#00b14f}
+.m-btn{margin-top:14px;width:100%;padding:12px;border:none;border-radius:12px;background:#f1f3f4;color:#202124;font-weight:700;cursor:pointer;font-family:inherit}
+.m-btn.hijau{background:#00b14f;color:#fff}
+.catatan{font-size:11px;color:#9aa0a6;text-align:center;margin-top:10px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translate(-50%,20px);z-index:99;background:rgba(32,33,36,.92);color:#fff;padding:10px 16px;border-radius:999px;font-size:12.5px;opacity:0;transition:.25s;pointer-events:none;max-width:88%;text-align:center}
+.toast.tampil{opacity:1;transform:translate(-50%,0)}
+@media (max-width:370px){.pf-nilai b{font-size:32px}}
+@media (min-width:600px){
+  html,body{background:#1b1d21}
+  .pg{left:50%;margin-left:-175px;width:350px;right:auto;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.55)}
+}
+</style>
+</head>
+<body>
+
+<div class="pg">
+  <div class="hd">
+    <button class="hd-bk" id="bkHome"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#202124" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>
+    <div class="hd-tt">Profil Saya</div>
+    <button class="hd-ico" id="pfEdit"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#202124" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>
+    <button class="hd-ico" id="pfBantuan"><svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="#202124" stroke-width="2"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.4 2.3c-.72.28-1.2.92-1.2 1.68v.42" fill="none" stroke="#202124" stroke-width="2" stroke-linecap="round"/><circle cx="11.8" cy="16.9" r="1.15" fill="#202124"/></svg></button>
+  </div>
+  <div class="bd">
+    <div class="sinkron" id="pfSinkron"><span class="dot"></span>Menghubungkan Firebase…</div>
+    <div class="pf-top">
+      <div class="pf-foto" id="pfFoto"></div>
+      <div class="pf-tx"><div class="pf-nama" id="pfNama">—</div><div class="pf-meta"><span id="pfGabung">Gabung bulan —</span><span class="pisah">|</span><span id="pfId">—</span></div></div>
+    </div>
+    <div class="reg-sec">
+      <h4>Data Registrasi Driver</h4>
+      <div class="reg-jml" id="pfRegJml"></div>
+      <div id="pfReg"></div>
+    </div>
+    <button class="pf-kartu" id="pfSafety">
+      <svg viewBox="0 0 24 24" width="34" height="34" style="flex-shrink:0"><path d="M12 2 4.5 5v6c0 5 3.2 8.7 7.5 10 4.3-1.3 7.5-5 7.5-10V5z" fill="none" stroke="#00897b" stroke-width="2"/><path d="M9.3 11.9l1.9 1.9 3.5-3.8" fill="none" stroke="#00897b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="pf-kartu-tx"><b>Laporan Keselamatan</b><small>Lihat gambaran perjalanan Anda</small></div>
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#202124" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+    <div class="pf-rate">
+      <div class="pf-rate-head"><span class="pf-rate-judul" id="pfRateJudul">0 orderan terakhir yang dinilai</span><span class="pf-updated" id="pfUpdated"></span></div>
+      <div class="pf-rate-grid"><div class="pf-nilai"><b id="pfNilai">0.00</b><span>Penilaian</span></div><div class="pf-bars" id="pfBars"></div></div>
+    </div>
+    <div class="pf-tabs"><button class="pf-tab aktif" id="tabPencapaian">Pencapaian</button><button class="pf-tab" id="tabPerbaikan">Perbaikan</button></div>
+    <div id="isiPencapaian"><div class="pf-sec"><h4>Lencana Pujian</h4><div class="pf-lencana" id="pfLencana"></div><button class="pf-lihat" id="pfLihatSemua">Lihat semua</button></div></div>
+    <div id="isiPerbaikan" style="display:none"><div class="pf-sec"><h4>Area Perbaikan</h4><div class="kosong" id="pfPerbaikan">Belum ada masukan perbaikan.</div></div></div>
+    <div class="pf-ulasan"><h4>Apa Kata Penumpang Anda</h4><div id="pfUlasan"></div></div>
+  </div>
+
+  <nav class="nav">
+    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="21" height="21"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Beranda</span></a>
+    <a href="pendapatan.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="21" height="21"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Pendapatan</span></a>
+    <a href="kotakmasuk.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="21" height="21"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg><span>Kotak Mas</span></a>
+    <a href="perencanaan.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="21" height="21"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Perencana</span></a>
+    <a class="aktif" href="profil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="21" height="21"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profil</span></a>
+  </nav>
+</div>
+
+<div class="modal" id="modal"><div class="modal-card"><h3 id="mJudul" style="color:#202124">—</h3><div id="mIsi"></div><button class="m-btn" id="mTutup">Tutup</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('tampil');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('tampil'),2200)}
+function modal(j,html){$('mJudul').textContent=j;$('mIsi').innerHTML=html;$('modal').classList.add('tampil')}
+ $('mTutup').addEventListener('click',()=>$('modal').classList.remove('tampil'));
+ $('bkHome').addEventListener('click',()=>location.href='index.html');
+
+/* ================= FIREBASE — sama dengan admin ================= */
+const firebaseConfig={apiKey:"AIzaSyD3FQbFF5a91MlASpqImTMmGkYvaTcdxm0",authDomain:"kadek-ed34e.firebaseapp.com",databaseURL:"https://kadek-ed34e-default-rtdb.firebaseio.com",projectId:"kadek-ed34e",storageBucket:"kadek-ed34e.firebasestorage.app",messagingSenderId:"65756136303",appId:"1:65756136303:web:6dbe5bc658fadb05ca1e9a"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+
+/* ================= STATE ================= */
+const KEY='gc_profil';
+let pfData=null;try{pfData=JSON.parse(localStorage.getItem(KEY))}catch(_){pfData=null}
+let fbRef=null,kunciAktif=null,scanSedang=false,pickerDibuka=false;
+let debugInfo={identitas:null,jumlah:0,cocok:0};
+
+function lsGet(k){try{return localStorage.getItem(k)}catch(_){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(_){}}
+function dariObj(k){let o=null;try{o=JSON.parse(lsGet(k)||'null')}catch(_){}return (o&&typeof o==='object')?o:null}
+const normDg=t=>String(t==null?'':t).replace(/\D/g,'');
+const fmtTelp=t=>{const n=normDg(t);return n?'+'+n:'—'};
+const tampilNama=n=>(!n||!String(n).trim()||String(n).trim()==='-')?'(Belum isi nama)':String(n);
+
+/* ================= IDENTITAS ================= */
+const LS_OBJ=['gc_driver','gc_driver_data','gc_login','gc_sesi','gc_session','gc_user','gc_akun','driver','driverData','driver_data','loginData','login_data','userData','user_data','sesi','session','akun','user'];
+function pengenal(){
+  const p=new URLSearchParams(location.search);
+  const r={id:null,telepon:null,email:null,nama:null};
+  r.id=p.get('id')||p.get('driverId')||lsGet('gc_driver_id')||lsGet('driverId')||lsGet('uid')||null;
+  r.telepon=p.get('telp')||p.get('telepon')||p.get('hp')||lsGet('gc_telepon')||null;
+  r.nama=p.get('nama')||lsGet('gc_driver_nama')||null;
+  for(const k of LS_OBJ){
+    const o=dariObj(k);if(!o)continue;
+    if(!r.id)for(const f of['id','uid','driverId','userId'])if(o[f]!=null&&String(o[f]).trim()!==''){r.id=String(o[f]);break}
+    if(!r.telepon)for(const f of['telepon','telp','hp','phone','noHp','noTelp','whatsapp','wa','no_hp','no_telp'])if(o[f]!=null&&String(o[f]).trim()!==''){r.telepon=String(o[f]);break}
+    if(!r.email&&o.email&&String(o.email).trim()!=='')r.email=String(o.email);
+    if(!r.nama)for(const f of['nama','name','namaLengkap','nama_lengkap'])if(o[f]&&String(o[f]).trim()!=='-'){r.nama=String(o[f]);break}
+  }
+  if(!r.telepon&&pfData&&pfData.telepon)r.telepon=String(pfData.telepon);
+  if(!r.nama&&pfData&&(pfData.nama||pfData.name))r.nama=String(pfData.nama||pfData.name);
+  return r;
+}
+function samaTelp(a,b){
+  const x=normDg(a),y=normDg(b);
+  if(!x||!y)return false;
+  if(x===y)return true;
+  const len=Math.min(x.length,y.length);
+  if(len>=10)return x.slice(-10)===y.slice(-10);
+  if(len>=9)return x.slice(-9)===y.slice(-9);
+  return false;
+}
+function cocok(v,key,c){
+  if(!v||typeof v!=='object')return false;
+  if(c.id&&(String(key)===String(c.id)||['id','uid','driverId','userId'].some(f=>v[f]!=null&&String(v[f])===String(c.id))))return true;
+  if(c.telepon){const ct=normDg(c.telepon);
+    if(ct&&['telepon','telp','hp','phone','noHp','noTelp','whatsapp','wa','no_hp','no_telp'].some(f=>samaTelp(v[f],ct)))return true}
+  if(c.email&&String(v.email||'').toLowerCase()===String(c.email).toLowerCase())return true;
+  if(c.nama&&String(v.nama||v.name||'').toLowerCase()===String(c.nama).toLowerCase())return true;
+  return false;
+}
+
+/* ================= STATUS ================= */
+function updateStatus(mode,txt){
+  const el=$('pfSinkron');
+  if(mode==='ok'){el.className='sinkron ok';el.innerHTML='<span class="dot"></span>Tersambung Firebase — '+esc(txt)}
+  else if(mode==='cari'){el.className='sinkron';el.innerHTML='<span class="dot"></span>Mencari data Anda di Firebase… ('+debugInfo.jumlah+' pendaftar diperiksa)'}
+  else if(mode==='tidak'){el.className='sinkron err';el.innerHTML='<span class="dot"></span>Akun belum terpilih — ketuk di sini untuk pilih akun'}
+  else if(mode==='perm'){el.className='sinkron err';el.innerHTML='<span class="dot"></span>Akses ditolak Rules Firebase — ketuk untuk info'}
+  else if(mode==='putus'){el.className='sinkron err';el.innerHTML='<span class="dot"></span>Terputus dari Firebase — periksa internet'}
+  else{el.className='sinkron';el.innerHTML='<span class="dot"></span>Menghubungkan Firebase…'}
+}
+
+/* ================= timestamp dari push-ID ================= */
+const PUSH_CHARS='-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+function tsDariId(id){try{let bin='';for(let i=0;i<8;i++){const idx=PUSH_CHARS.indexOf(String(id)[i]);if(idx<0)return 0;bin+=idx.toString(2).padStart(6,'0')}return parseInt(bin,2)}catch(_){return 0}}
+function fmtBulan(v){
+  if(v==null||v==='')return null;
+  const t=typeof v==='number'?v:Date.parse(v);
+  if(isNaN(t))return null;
+  return new Date(t).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+}
+const bersihKey=s=>String(s).replace(/[.#$/\[\]]/g,'_');
+
+/* ================= LANGGANAN REALTIME ================= */
+function terapkan(v){
+  if(!v||typeof v!=='object')return;
+  pfData=Object.assign({},pfData||{},v);
+  pfData.id=pfData.id||kunciAktif;
+  try{localStorage.setItem(KEY,JSON.stringify(pfData))}catch(_){}
+  if(pfData.telepon)lsSet('gc_telepon',String(pfData.telepon));
+  if(pfData.nama)lsSet('gc_driver_nama',String(pfData.nama));
+  render();
+}
+function langganan(path){
+  if(fbRef)return;
+  kunciAktif=path.split('/').pop();
+  fbRef=db.ref(path);
+  updateStatus('ok','pendaftaran/'+kunciAktif);
+  fbRef.on('value',s=>{if(s.exists())terapkan(s.val())},err=>updateStatus('perm',err.code));
+}
+
+/* ================= PENCARIAN OTOMATIS ================= */
+const NODE_CARI=['pendaftaran','drivers','driver','users'];
+const BOBOT={aktif:100,disetujui:80,proses:40,perlu_perbaikan:30,belum_otp:20,suspend:10,ditolak:5,ditolak_duplikat:0};
+const bobot=s=>BOBOT[String(s||'').toLowerCase()]||25;
+
+function pindai(){
+  if(scanSedang||fbRef)return;
+  const c=pengenal();
+  debugInfo.identitas=c;
+  if(!c.id&&!c.telepon&&!c.email&&!c.nama){
+    updateStatus('tidak');
+    if(!pickerDibuka){pickerDibuka=true;setTimeout(bukaPilihAkun,400)}
+    return;
+  }
+  scanSedang=true;updateStatus('cari');
+  const kandidat=[];let sisa=NODE_CARI.length,perm=false;
+  NODE_CARI.forEach(n=>{
+    db.ref(n).limitToLast(2000).once('value').then(s=>{
+      let jml=0;
+      if(s.exists())s.forEach(ch=>{jml++;const v=ch.val();if(cocok(v,ch.key,c))kandidat.push({node:n,key:ch.key,v})});
+      if(n==='pendaftaran')debugInfo.jumlah=jml;
+    }).catch(err=>{if(String(err&&(err.code||err.message||'')).toUpperCase().indexOf('PERMISSION')>=0)perm=true})
+      .then(()=>{
+        if(--sisa===0){
+          scanSedang=false;debugInfo.cocok=kandidat.length;
+          if(fbRef)return;
+          if(kandidat.length){
+            kandidat.sort((a,b)=>bobot(b.v.status)-bobot(a.v.status)||tsDariId(b.key)-tsDariId(a.key));
+            const t=kandidat[0];
+            lsSet('gc_driver_id',t.key);
+            if(t.v&&t.v.telepon)lsSet('gc_telepon',String(t.v.telepon));
+            if(t.v&&t.v.nama)lsSet('gc_driver_nama',String(t.v.nama));
+            langganan(t.node+'/'+t.key);
+          }else{
+            updateStatus(perm?'perm':'tidak');
+            if(!perm&&!pickerDibuka){pickerDibuka=true;setTimeout(bukaPilihAkun,400)}
+          }
+        }
+      });
+  });
+}
+function mulaiFirebase(){
+  updateStatus('tunggu');
+  db.ref('.info/connected').on('value',s=>{if(!s.val()&&!fbRef&&!scanSedang)updateStatus('putus')});
+  const c=pengenal();
+  debugInfo.identitas=c;
+  if(c.id){
+    const k=bersihKey(c.id);
+    db.ref('pendaftaran/'+k).on('value',s=>{if(s.exists()&&!fbRef)langganan('pendaftaran/'+k)},()=>{});
+    setTimeout(()=>{if(!fbRef)pindai()},1500);
+  }else if(c.telepon||c.email||c.nama){
+    pindai();
+  }else{
+    updateStatus('tidak');
+    if(!pickerDibuka){pickerDibuka=true;setTimeout(bukaPilihAkun,400)}
+  }
+}
+
+/* ================= PILIH AKUN (dari daftar — paling pasti) ================= */
+function bukaPilihAkun(){
+  modal('Pilih Akun Anda','<div class="kosong" id="paLoad" style="padding:12px 0">Memuat daftar pendaftar…</div>');
+  db.ref('pendaftaran').limitToLast(30).once('value').then(s=>{
+    if(!$('paLoad'))return;
+    if(!s.exists()){$('paLoad').textContent='Belum ada pendaftar di node "pendaftaran". Daftar dulu lewat aplikasi driver.';return}
+    const arr=[];s.forEach(ch=>arr.push({key:ch.key,v:ch.val()}));
+    arr.sort((a,b)=>(Number(a.v&&a.v.dibuat)||tsDariId(a.key))<(Number(b.v&&b.v.dibuat)||tsDariId(b.key))?1:-1);
+    let html='<div class="kosong" style="text-align:left;padding:2px 0 6px">Ketuk akun Anda (nama & No. HP yang dipakai saat mendaftar):</div>';
+    html+=arr.map(x=>{
+      const v=x.v||{};
+      const st=String(v.status||'belum_otp').replace(/_/g,' ');
+      return '<button class="m-btn pa-item" data-key="'+esc(x.key)+'" style="margin-top:8px;text-align:left"><b style="font-size:15px">'+esc(tampilNama(v.nama))+'</b><br><span style="font-weight:600;font-size:13px;color:#5f6368">'+esc(fmtTelp(v.telepon))+' · '+esc(st)+'</span></button>';
+    }).join('');
+    html+='<button class="m-btn" id="paCari" style="margin-top:14px">Cari dengan No. HP</button>';
+    $('mIsi').innerHTML=html;
+    $('mIsi').querySelectorAll('.pa-item').forEach(b=>b.addEventListener('click',()=>{
+      const key=b.getAttribute('data-key');
+      const x=arr.find(a=>a.key===key);
+      lsSet('gc_driver_id',key);
+      if(x&&x.v){
+        if(x.v.telepon)lsSet('gc_telepon',String(x.v.telepon));
+        if(x.v.nama)lsSet('gc_driver_nama',String(x.v.nama));
+      }
+      $('modal').classList.remove('tampil');
+      langganan('pendaftaran/'+key);
+      toast('Akun dipilih — memuat data…');
+    }));
+    $('paCari').addEventListener('click',modalIdentitas);
+  }).catch(e=>{if($('paLoad'))$('paLoad').textContent='Gagal memuat daftar: '+e.message});
+}
+function modalIdentitas(){
+  modal('Cari Data Saya',
+    '<div class="catatan" style="text-align:left;font-size:13px;color:#5f6368;margin:4px 0 0">No. HP yang Anda pakai saat mendaftar (harus sama dengan yang terlihat di panel admin):</div>'+
+    '<input class="m-in" id="miTelp" inputmode="tel" placeholder="08xxxxxxxxxx" value="'+esc(lsGet('gc_telepon')||'')+'">'+
+    '<div class="catatan" style="text-align:left;font-size:13px;color:#5f6368;margin:10px 0 0">Nama lengkap (opsional):</div>'+
+    '<input class="m-in" id="miNama" placeholder="Nama sesuai pendaftaran" value="'+esc(lsGet('gc_driver_nama')||'')+'">'+
+    '<button class="m-btn hijau" id="miCari">Cari & Tampilkan Data Saya</button>');
+  $('miCari').addEventListener('click',()=>{
+    const tp=normDg($('miTelp').value),nm=$('miNama').value.trim();
+    if(tp.length<9){toast('No. HP tidak valid');return}
+    lsSet('gc_telepon',tp);
+    if(nm)lsSet('gc_driver_nama',nm);
+    $('modal').classList.remove('tampil');
+    pickerDibuka=true;
+    pindai();
+  });
+}
+ $('pfSinkron').addEventListener('click',()=>{
+  if(fbRef){
+    modal('Status Sinkron','<p class="kosong" style="text-align:left;line-height:1.7">Tersambung ke: <b>pendaftaran/'+esc(kunciAktif||'')+'</b><br>Untuk ganti akun, ketuk ikon (?) di kanan atas → "Ganti / Pilih Akun".</p>');
+  }else{
+    bukaPilihAkun();
+  }
+});
+
+/* ================= SIMPAN DUA ARAH ================= */
+function simpanProfil(patch){
+  pfData=Object.assign({},pfData||{},patch);
+  try{localStorage.setItem(KEY,JSON.stringify(pfData))}catch(_){}
+  render();
+  if(fbRef){
+    fbRef.update(patch)
+      .then(()=>toast('Tersimpan & tersinkron ke Firebase ✓'))
+      .catch(e=>toast('Gagal ke Firebase: '+e.message));
+  }else{
+    toast('Tersimpan lokal (Firebase belum tertaut)');
+  }
+}
+
+/* ================= RENDER ================= */
+const ICO_ORANG='<svg viewBox="0 0 24 24" width="46" height="46"><circle cx="12" cy="8.2" r="3.7" fill="#b9bec4"/><path d="M12 13.4c-4.1 0-6.8 2.5-6.8 6.1v.7h13.6v-.7c0-3.6-2.7-6.1-6.8-6.1z" fill="#b9bec4"/></svg>';
+const SKIP_REG={foto:1,photo:1,fotoUrl:1,avatar:1,password:1,pass:1,sandi:1,kataSandi:1,pin:1,token:1,fcm:1,fcmToken:1,lencana:1,ulasan:1,reviews:1,distribusi:1,perbaikan:1,rating:1,jumlahOrder:1,updated:1,updatedAt:1,lastUpdate:1,otp:1,otpDikirim:1,passwordDikirim:1,itemPerbaikan:1,catatanPerbaikan:1,alasanDitolak:1,riwayat:1,dokumen:1,waktuPerbaikan:1};
+const LABELS={nama:'Nama Lengkap',name:'Nama Lengkap',namaLengkap:'Nama Lengkap',telepon:'No. Telepon',telp:'No. Telepon',hp:'No. Telepon',phone:'No. Telepon',noHp:'No. Telepon',noTelp:'No. Telepon',whatsapp:'WhatsApp',wa:'WhatsApp',email:'Email',alamat:'Alamat',domisili:'Domisili',nik:'NIK',ktp:'No. KTP',noKtp:'No. KTP',sim:'No. SIM',noSim:'No. SIM',jenisSim:'Jenis SIM',masaBerlakuSim:'SIM Berlaku Hingga',platNomor:'Plat Nomor',plat:'Plat Nomor',noPolisi:'Plat Nomor',nopol:'Plat Nomor',mobil:'Mobil / Kendaraan',jenisKendaraan:'Jenis Kendaraan',kendaraan:'Kendaraan',merek:'Merek',merk:'Merek',tipe:'Tipe',model:'Model',warna:'Warna',tahun:'Tahun',transmisi:'Transmisi',bank:'Bank',noRek:'No. Rekening',rekening:'No. Rekening',namaRek:'Nama Rekening',namaBank:'Nama Bank',tanggalLahir:'Tanggal Lahir',tglLahir:'Tanggal Lahir',lahir:'Tanggal Lahir',tanggalDaftar:'Tanggal Daftar',tglDaftar:'Tanggal Daftar',createdAt:'Tanggal Daftar',dibuat:'Tanggal Daftar',status:'Status',statusAkun:'Status Akun',darurat:'Kontak Darurat',kontakDarurat:'Kontak Darurat',id:'ID Driver',uid:'ID Driver',driverId:'ID Driver',gender:'Jenis Kelamin',jenisKelamin:'Jenis Kelamin',wilayah:'Wilayah',area:'Area Operasional',referral:'Kode Referal',referal:'Kode Referal',catatan:'Catatan'};
+function flatten(o,pre,acc){
+  Object.keys(o||{}).forEach(k=>{
+    const v=o[k],key=pre?pre+'.'+k:k;
+    if(key==='dokumen')return;
+    if(v&&typeof v==='object'&&!Array.isArray(v))flatten(v,key,acc);
+    else acc.push([key,Array.isArray(v)?v.filter(x=>x!=null&&x!=='').join(', '):v]);
+  });
+  return acc;
+}
+function rapi(k){return k.replace(/[._]/g,' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\s+/g,' ').trim().replace(/^./,c=>c.toUpperCase())}
+function label(k){const leaf=k.split('.').pop();return LABELS[leaf]||LABELS[k]||rapi(leaf)}
+function isImgValue(s){
+  if(typeof s!=='string')return false;
+  const t=s.trim();
+  if(!t)return false;
+  if(/^(data:image|https?:\/\/|blob:)/i.test(t))return true;
+  const b=t.replace(/[\s\r\n]+/g,'');
+  return b.length>100&&/^[A-Za-z0-9+/=]+$/.test(b);
+}
+function fmtVal(k,v){
+  if(v==null||v==='')return null;
+  if(typeof v==='boolean')return v?'Ya':'Tidak';
+  const s=String(v).trim();
+  if(!s||s==='-'||s==='null'||s==='undefined')return null;
+  if(isImgValue(s))return null;
+  if(s.length>120)return null;
+  if(k==='status'||k.endsWith('.status'))return s.replace(/_/g,' ');
+  if(/tanggal|tgl|lahir|created|dibuat|daftar|dob/i.test(k)&&/\d{4}/.test(s)){const t=Date.parse(s);if(!isNaN(t))return new Date(t).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
+  if(typeof v==='number'&&v>1e12&&/waktu|time|timestamp|dibuat/i.test(k))return new Date(v).toLocaleString('id-ID');
+  return s;
+}
+function renderRegistrasi(d){
+  const flat=flatten(d,'',[]).filter(([k])=>{const leaf=k.split('.').pop();return !SKIP_REG[leaf]&&!SKIP_REG[k]});
+  const rows=flat.map(([k,v])=>{
+    const t=fmtVal(k,v);
+    if(t===null)return '';
+    const leaf=k.split('.').pop();
+    const hijau=(leaf==='status'&&/aktif|active|approved|disetujui|verified/i.test(t))?' hijau':'';
+    return '<div class="reg-r"><span class="k">'+esc(label(k))+'</span><span class="v'+hijau+'">'+esc(t)+'</span></div>';
+  }).filter(Boolean);
+  $('pfRegJml').textContent=rows.length?rows.length+' data tersinkron dari Firebase':'';
+  $('pfReg').innerHTML=rows.length?rows.join(''):'<div class="kosong">Belum ada data registrasi dari Firebase.</div>';
+}
+function render(){
+  const d=pfData||{};
+  $('pfNama').textContent=d.nama||d.name||'—';
+  $('pfGabung').textContent='Gabung bulan '+(d.gabung||fmtBulan(d.dibuat||d.tanggalDaftar||d.createdAt||tsDariId(kunciAktif))||'—');
+  $('pfId').textContent=d.id||d.uid||d.driverId||kunciAktif||'—';
+  const fotoSrc=d.foto||d.selfie||d.foto_profil||d.fotoProfil||d.foto_diri||'';
+  const foto=$('pfFoto');
+  if(fotoSrc&&isImgValue(fotoSrc)){foto.style.backgroundImage='url("'+fotoSrc+'")';foto.innerHTML=''}
+  else{foto.style.backgroundImage='none';foto.innerHTML=ICO_ORANG}
+  const dist=Object.assign({5:0,4:0,3:0,2:0,1:0},d.distribusi||{});
+  const total=d.jumlahOrder||Object.values(dist).reduce((a,b)=>a+(Number(b)||0),0);
+  $('pfRateJudul').textContent=total+' orderan terakhir yang dinilai';
+  $('pfUpdated').textContent=d.updated?('Updated '+d.updated):'';
+  $('pfNilai').textContent=Number(d.rating||0).toFixed(2);
+  const max=Math.max(1,...Object.values(dist).map(Number));
+  $('pfBars').innerHTML=[5,4,3,2,1].map(n=>'<div class="pf-bar-row"><span>'+n+'</span><div class="pf-bar-track"><div class="pf-bar-fill" style="width:'+((Number(dist[n])||0)/max*100)+'%"></div></div><span class="pf-bar-n">'+(dist[n]||0)+'</span></div>').join('');
+  const lc=Array.isArray(d.lencana)?d.lencana:Object.values(d.lencana||{});
+  $('pfLencana').innerHTML=lc.length?lc.map(l=>'<div class="pf-lc"><div class="pf-lc-ic" style="background:'+esc(l.warna||'#eceff1')+'">'+esc(l.ikon||'🏅')+'<span class="pf-lc-n">'+Number(l.jumlah||0)+'</span></div><span class="l">'+esc(l.judul)+'</span></div>').join(''):'<div class="kosong">Belum ada lencana.</div>';
+  const ul=Array.isArray(d.ulasan)?d.ulasan:Object.values(d.ulasan||{});
+  $('pfUlasan').innerHTML=ul.length?ul.map(u=>'<div class="pf-u"><div class="pf-u-top"><b>'+esc(u.nama||'Penumpang')+'</b><span class="pf-u-star">'+'★'.repeat(Math.min(5,Math.max(0,u.bintang||5)))+'</span></div><div class="pf-u-teks">'+esc(u.teks||'')+'</div></div>').join(''):'<div class="kosong">Belum ada ulasan penumpang.</div>';
+  if(d.perbaikan)$('pfPerbaikan').textContent=d.perbaikan;
+  renderRegistrasi(d);
+}
+
+/* ================= AKSI ================= */
+ $('pfEdit').addEventListener('click',()=>{
+  const d=pfData||{};
+  const fld=(l,id,v,ph)=>'<div class="catatan" style="text-align:left;font-size:13px;color:#5f6368;margin:10px 0 0">'+l+'</div><input class="m-in" id="'+id+'" value="'+esc(v||'')+'" placeholder="'+ph+'">';
+  modal('Edit Profil',
+    fld('Nama Lengkap','efNama',d.nama||d.name,'Nama lengkap')+
+    fld('No. Telepon','efTelp',d.telepon||d.hp||d.phone,'08xxxxxxxxxx')+
+    fld('Alamat','efAlamat',d.alamat,'Alamat domisili')+
+    fld('URL Foto','efFoto',d.foto,'https://...')+
+    '<div class="catatan">Perubahan langsung terlihat di panel admin (realtime)</div>'+
+    '<button class="m-btn hijau" id="efSimpan">Simpan</button>');
+  $('efSimpan').addEventListener('click',()=>{
+    const nm=$('efNama').value.trim(),tp=$('efTelp').value.trim(),al=$('efAlamat').value.trim(),ft=$('efFoto').value.trim();
+    const ada=list=>{for(const k of list)if(k in (pfData||{}))return k;return list[0]};
+    const patch={};
+    if(nm)patch[ada(['nama','name'])]=nm;
+    patch[ada(['telepon','hp','phone','noHp','noTelp'])]=tp;
+    patch[ada(['alamat','domisili'])]=al;
+    patch[ada(['foto','selfie','fotoUrl'])]=ft;
+    simpanProfil(patch);
+    $('modal').classList.remove('tampil');
+  });
+});
+ $('pfBantuan').addEventListener('click',()=>{
+  const c=debugInfo.identitas||pengenal();
+  modal('Bantuan & Diagnostik',
+    '<div class="kosong" style="text-align:left;line-height:1.8">Node data: <b>pendaftaran</b> (sama dengan admin)<br>'+
+    'Identitas terdeteksi:<br>• No. HP: <b>'+(c.telepon?esc(fmtTelp(c.telepon)):'—')+'</b><br>'+
+    '• Nama: <b>'+(c.nama?esc(c.nama):'—')+'</b><br>'+
+    '• ID tersimpan: <b>'+esc(lsGet('gc_driver_id')||'—')+'</b><br>'+
+    'Pendaftar diperiksa: <b>'+debugInfo.jumlah+'</b> · Cocok: <b>'+debugInfo.cocok+'</b></div>'+
+    '<button class="m-btn hijau" id="dgPilih">🔄 Ganti / Pilih Akun</button>'+
+    '<div class="catatan" style="line-height:1.6">Admin menampilkan SEMUA pendaftar, sedangkan halaman ini harus tahu akun mana milik Anda. Gunakan "Pilih Akun" bila data tidak muncul otomatis.</div>');
+  $('dgPilih').addEventListener('click',()=>{pickerDibuka=false;bukaPilihAkun()});
+});
+ $('pfSafety').addEventListener('click',()=>{
+  modal('Laporan Keselamatan',
+    '<div class="r"><span>Total perjalanan</span><b style="color:#202124">'+((pfData&&pfData.jumlahOrder)||0)+'</b></div>'+
+    '<div class="r"><span>Insiden tercatat</span><b style="color:#00b14f">0</b></div>'+
+    '<div class="catatan">Data keselamatan dari server akan tampil di sini</div>');
+});
+ $('pfLihatSemua').addEventListener('click',()=>{
+  const d=pfData||{};
+  const lc=Array.isArray(d.lencana)?d.lencana:Object.values(d.lencana||{});
+  modal('Semua Lencana',lc.length?lc.map(l=>'<div class="r"><div style="font-size:22px;width:30px;flex-shrink:0">'+esc(l.ikon||'🏅')+'</div><div style="min-width:0;flex:1"><b style="color:#202124">'+esc(l.judul)+'</b><div class="sub" style="font-size:12px;color:#5f6368">'+l.jumlah+' kali pujian</div></div></div>').join(''):'<div class="kosong">Belum ada lencana.</div>');
+});
+ $('tabPencapaian').addEventListener('click',()=>{$('tabPencapaian').classList.add('aktif');$('tabPerbaikan').classList.remove('aktif');$('isiPencapaian').style.display='';$('isiPerbaikan').style.display='none'});
+ $('tabPerbaikan').addEventListener('click',()=>{$('tabPerbaikan').classList.add('aktif');$('tabPencapaian').classList.remove('aktif');$('isiPerbaikan').style.display='';$('isiPerbaikan').style.display='none'});
+
+render();
+mulaiFirebase();
+</script>
+</body>
+</html>

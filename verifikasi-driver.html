@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0a1628" />
+<title>Get Car Mitra — Siap Bekerja</title>
+
+<!-- Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<!-- Cek foto latar -->
+<script>
+  const BG_URL = "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1600&q=80";
+  const bg = new Image();
+  bg.onload = () => document.body.classList.add("has-photo");
+  bg.src = BG_URL;
+</script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #0a1628;
+    --accent: #2f7bff;
+    --accent-deep: #0f5ae0;
+    --green: #2ecc71;
+    --white: #ffffff;
+    --glass: rgba(255, 255, 255, 0.10);
+    --glass-border: rgba(255, 255, 255, 0.22);
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .phone { width: 100%; max-width: 430px; height: 100dvh; overflow: hidden; }
+
+  .hero {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #0d1f3c 0%, #0a1628 55%, #060d1a 100%);
+    overflow: hidden;
+  }
+
+  body.has-photo .hero {
+    background-image:
+      linear-gradient(180deg, rgba(6,13,26,0.80) 0%, rgba(6,13,26,0.85) 50%, rgba(6,13,26,0.95) 100%),
+      url("https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1600&q=80");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+  .glow-1 { width: 320px; height: 320px; background: rgba(47,123,255,0.28); top: -100px; right: -100px; }
+  .glow-2 { width: 280px; height: 280px; background: rgba(47,123,255,0.16); bottom: 60px; left: -120px; }
+
+  .navbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
+    z-index: 10;
+  }
+
+  .brand {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    color: var(--white);
+  }
+  .brand span { color: var(--accent); }
+
+  .version {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 26px calc(20px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  .logo-small {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.45));
+    animation: pop 0.7s 0.1s ease both, float 4s 1s ease-in-out infinite;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin: 14px 0 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-size: clamp(24px, 6.5vw, 30px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.35);
+  }
+  h1 span {
+    background: linear-gradient(90deg, #6db3ff, #2f7bff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.75);
+    max-width: 320px;
+    margin-bottom: 22px;
+  }
+
+  /* Badge verifikasi */
+  .badge-verified {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(70,200,120,0.12);
+    border: 1px solid rgba(70,200,120,0.30);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .badge-verified svg { width: 20px; height: 20px; flex-shrink: 0; color: #7ee2a8; }
+  .badge-verified p { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.85); }
+  .badge-verified b { color: #7ee2a8; }
+
+  /* Kartu data driver */
+  .info-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.30);
+    margin-bottom: 16px;
+  }
+  .info-title {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 14px;
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.12);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .info-value {
+    font-size: 14px;
+    font-weight: 800;
+    text-align: right;
+    letter-spacing: 0.3px;
+  }
+  .info-value.nopol { letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Kartu status bekerja */
+  .kerja-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border-radius: 22px;
+    padding: 22px 18px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.30);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .kerja-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    margin: 0 auto 12px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .kerja-dot.online {
+    background: var(--green);
+    box-shadow: 0 0 0 6px rgba(46,204,113,0.18), 0 0 20px rgba(46,204,113,0.7);
+    animation: denyut 1.8s ease-in-out infinite;
+  }
+  @keyframes denyut {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(46,204,113,0.18), 0 0 20px rgba(46,204,113,0.7); }
+    50%      { box-shadow: 0 0 0 10px rgba(46,204,113,0.10), 0 0 30px rgba(46,204,113,0.9); }
+  }
+  .kerja-status {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .kerja-status.online { color: #7ee2a8; }
+  .kerja-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  /* Peringatan belum terverifikasi */
+  .peringatan {
+    display: none;
+    background: rgba(255, 90, 90, 0.10);
+    border: 1px solid rgba(255, 90, 90, 0.30);
+    border-radius: 18px;
+    padding: 18px 16px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .peringatan.tampil { display: block; animation: fadeUp 0.4s ease both; }
+  .peringatan h2 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #ff9b9b;
+    margin-bottom: 8px;
+  }
+  .peringatan p { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.8); }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.25s ease, background 0.25s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .btn-mulai {
+    background: linear-gradient(135deg, var(--green), #1f9e56);
+    color: #06240f;
+    box-shadow: 0 8px 24px rgba(46,204,113,0.4);
+  }
+  .btn-berhenti {
+    background: rgba(255,255,255,0.10);
+    border: 1.5px solid rgba(255,255,255,0.30);
+    color: var(--white);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--white);
+    text-decoration: none;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.15); }
+
+  .copyright {
+    margin-top: auto;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    user-select: none;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  .navbar       { animation: fadeUp 0.6s ease both; }
+  .eyebrow      { animation: fadeUp 0.7s 0.2s ease both; }
+  h1            { animation: fadeUp 0.7s 0.3s ease both; }
+  .desc         { animation: fadeUp 0.7s 0.4s ease both; }
+  .badge-verified { animation: fadeUp 0.7s 0.5s ease both; }
+  .info-card    { animation: fadeUp 0.7s 0.6s ease both; }
+  .kerja-card   { animation: fadeUp 0.7s 0.7s ease both; }
+  .copyright    { animation: fadeUp 0.7s 0.85s ease both; }
+
+  @media (max-width: 360px) {
+    .content { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="phone">
+    <div class="hero">
+
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+
+      <!-- Navbar -->
+      <nav class="navbar">
+        <div class="brand">Get <span>Car</span></div>
+        <div class="version">V1.103.1</div>
+      </nav>
+
+      <!-- Konten -->
+      <div class="content">
+        <img src="get.png" alt="Logo Get Car" class="logo-small" onerror="this.style.display='none'" />
+
+        <div class="eyebrow">Status Mitra</div>
+        <h1>Siap untuk <span>Bekerja</span></h1>
+        <p class="desc">Selamat! Pendaftaran Anda telah disetujui. Aktifkan status kerja untuk mulai menerima trip.</p>
+
+        <!-- Badge terverifikasi -->
+        <div class="badge-verified" id="badgeVerified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <p><b>Akun terverifikasi admin.</b> Selamat bergabung sebagai mitra driver Get Car.</p>
+        </div>
+
+        <!-- Peringatan bila belum terverifikasi -->
+        <div class="peringatan" id="peringatan">
+          <h2>Akun Belum Diverifikasi</h2>
+          <p>Pendaftaran Anda masih dalam proses verifikasi admin.<br>Silakan cek kembali beberapa saat lagi.</p>
+        </div>
+
+        <!-- Kartu data driver -->
+        <div class="info-card" id="infoCard">
+          <div class="info-title">Data Mitra</div>
+          <div class="info-row">
+            <span class="info-label">Nama</span>
+            <span class="info-value" id="infoNama">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Telepon</span>
+            <span class="info-value" id="infoTelepon">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Kendaraan</span>
+            <span class="info-value" id="infoKendaraan">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Plat Nomor</span>
+            <span class="info-value nopol" id="infoNopol">-</span>
+          </div>
+        </div>
+
+        <!-- Kartu status kerja -->
+        <div class="kerja-card" id="kerjaCard">
+          <div class="kerja-dot" id="kerjaDot"></div>
+          <div class="kerja-status" id="kerjaStatus">SEDANG ISTIRAHAT</div>
+          <p class="kerja-sub" id="kerjaSub">Aktifkan status kerja untuk mulai menerima trip penumpang.</p>
+          <button id="btnKerja" class="btn btn-mulai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span id="btnKerjaText">Mulai Bekerja</span>
+          </button>
+        </div>
+
+        <a href="index.html" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
+        </a>
+
+        <div class="copyright">Hak Cipta © PT Bali Global Trans</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  // ================= KONFIGURASI FIREBASE =================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3FQbFF5a91MlASpqImTMmGkYvaTcdxm0",
+    authDomain: "kadek-ed34e.firebaseapp.com",
+    databaseURL: "https://kadek-ed34e-default-rtdb.firebaseio.com",
+    projectId: "kadek-ed34e",
+    storageBucket: "kadek-ed34e.firebasestorage.app",
+    messagingSenderId: "65756136303",
+    appId: "1:65756136303:web:6dbe5bc658fadb05ca1e9a"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Status yang dianggap terverifikasi — sama dengan kota.html
+  const STATUS_VERIFIED = ["terverifikasi", "aktif", "disetujui"];
+
+  // ================= ELEMEN =================
+  const badgeVerified = document.getElementById("badgeVerified");
+  const peringatan    = document.getElementById("peringatan");
+  const infoNama      = document.getElementById("infoNama");
+  const infoTelepon   = document.getElementById("infoTelepon");
+  const infoKendaraan = document.getElementById("infoKendaraan");
+  const infoNopol     = document.getElementById("infoNopol");
+  const kerjaCard     = document.getElementById("kerjaCard");
+  const kerjaDot      = document.getElementById("kerjaDot");
+  const kerjaStatus   = document.getElementById("kerjaStatus");
+  const kerjaSub      = document.getElementById("kerjaSub");
+  const btnKerja      = document.getElementById("btnKerja");
+  const btnKerjaText  = document.getElementById("btnKerjaText");
+
+  // ================= STATE =================
+  let telepon    = null;
+  let recordKey  = null;
+  let sedangOnline = false;
+  let sedangProses = false;
+
+  const params = new URLSearchParams(window.location.search);
+  telepon = (params.get("telepon") || "").trim();
+
+  function normalisasi(nomor) {
+    if (nomor.startsWith("0"))  return "+62" + nomor.slice(1);
+    if (nomor.startsWith("62")) return "+" + nomor;
+    if (nomor.startsWith("8"))  return "+62" + nomor;
+    return nomor;
+  }
+  if (telepon) telepon = normalisasi(telepon);
+
+  function apakahTerverifikasi(status) {
+    return STATUS_VERIFIED.includes(String(status || "").trim().toLowerCase());
+  }
+
+  // ================= TAMPILKAN STATUS KERJA =================
+  function tampilkanStatusKerja(statusBekerja) {
+    sedangOnline = (statusBekerja === "online");
+
+    if (sedangOnline) {
+      kerjaDot.classList.add("online");
+      kerjaStatus.textContent = "SIAP BEKERJA";
+      kerjaStatus.classList.add("online");
+      kerjaSub.textContent = "Anda sedang online dan dapat menerima trip penumpang.";
+      btnKerja.className = "btn btn-berhenti";
+      btnKerjaText.textContent = "Berhenti Bekerja";
+    } else {
+      kerjaDot.classList.remove("online");
+      kerjaStatus.textContent = "SEDANG ISTIRAHAT";
+      kerjaStatus.classList.remove("online");
+      kerjaSub.textContent = "Aktifkan status kerja untuk mulai menerima trip penumpang.";
+      btnKerja.className = "btn btn-mulai";
+      btnKerjaText.textContent = "Mulai Bekerja";
+    }
+  }
+
+  // ================= TOMBOL MULAI / BERHENTI =================
+  btnKerja.addEventListener("click", async () => {
+    if (!recordKey || sedangProses) return;
+
+    sedangProses = true;
+    btnKerja.disabled = true;
+    btnKerjaText.textContent = sedangOnline ? "Menghentikan..." : "Mengaktifkan...";
+
+    try {
+      await db.ref("pendaftaran/" + recordKey).update({
+        status_bekerja: sedangOnline ? "offline" : "online",
+        waktu_status: new Date().toLocaleString("id-ID")
+      });
+      // Tampilan diperbarui oleh listener realtime di bawah
+    } catch (err) {
+      alert("Gagal mengubah status: " + err.message);
+    } finally {
+      sedangProses = false;
+      btnKerja.disabled = false;
+    }
+  });
+
+  // ================= MUAT DATA DRIVER & PANTAU REALTIME =================
+  if (telepon && telepon.length > 5) {
+    infoTelepon.textContent = telepon;
+
+    db.ref("pendaftaran")
+      .orderByChild("telepon")
+      .equalTo(telepon)
+      .on("value", snap => {
+        if (!snap.exists()) {
+          peringatan.classList.add("tampil");
+          badgeVerified.style.display = "none";
+          infoCard.style.display = "none";
+          kerjaCard.style.display = "none";
+          return;
+        }
+
+        snap.forEach(child => {
+          recordKey = child.key;
+          const d = child.val();
+
+          // Jika status berubah menjadi belum terverifikasi (dicabut admin),
+          // tampilkan peringatan
+          if (!apakahTerverifikasi(d.status)) {
+            peringatan.classList.add("tampil");
+            badgeVerified.style.display = "none";
+            kerjaCard.style.display = "none";
+            return;
+          }
+
+          peringatan.classList.remove("tampil");
+          badgeVerified.style.display = "flex";
+          kerjaCard.style.display = "block";
+
+          // Isi data mitra
+          infoNama.textContent      = d.nama || d.nama_lengkap || "-";
+          infoKendaraan.textContent = d.jenis || d.kendaraan || "Mobil";
+          infoNopol.textContent     = d.nopol || "-";
+        });
+      }, err => {
+        console.warn("Gagal memuat data driver:", err.message);
+        peringatan.classList.add("tampil");
+      });
+
+  } else {
+    // Tanpa parameter telepon — tampilkan peringatan
+    peringatan.classList.add("tampil");
+    badgeVerified.style.display = "none";
+    infoCard.style.display = "none";
+    kerjaCard.style.display = "none";
+  }
+</script>
+
+</body>
+</html>
